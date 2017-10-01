@@ -1,0 +1,1 @@
+See https://dbs.uni-leipzig.de/de/research/projects/object_matching/fever/benchmark_datasets_for_entity_resolution for data
