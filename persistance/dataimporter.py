@@ -1,20 +1,19 @@
 import csv
 
-from dto.abt_buy_linkage import AbtBuyLinkage
 from dto.abt_entry import AbtEntry
 from dto.buy_entry import BuyEntry
 
 
 class DataImporter:
-    # ABT_FILE_NAME = 'Abt.csv'
-    # BUY_FILE_NAME = 'Buy.csv'
-    # ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_perfectMapping.csv'
-    ABT_FILE_NAME = 'abt_small.csv'  # TODO: activate the real data!
-    BUY_FILE_NAME = 'buy_small.csv'
-    ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_empty.csv'
+    ABT_FILE_NAME = 'Abt.csv'
+    BUY_FILE_NAME = 'Buy.csv'
+    ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_perfectMapping.csv'
+    # ABT_FILE_NAME = 'abt_small.csv'  # TODO: activate the real data!
+    # BUY_FILE_NAME = 'buy_small.csv'
+    # ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_almost_empty.csv'
 
     def __init__(self):
-        print('hello world')
+        print('initialize data importer')
 
     def _import_abt(self, folder):
         abt_data = {}
@@ -45,12 +44,12 @@ class DataImporter:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 try:
-                    abt_entry = abt_data[row['idAbt']]
-                    buy_entry = buy_data[row['idBuy']]
-
-                    linkage = AbtBuyLinkage(abt_entry, buy_entry)
-
-                    gold_standard.append(linkage)
+                    gold_standard.append({
+                        'abt_record': abt_data[row['idAbt']],
+                        'abt_record_id': row['idAbt'],
+                        'buy_record': buy_data[row['idBuy']],
+                        'buy_record_id': row['idBuy']
+                    })
                 except KeyError:
                     print('could not find objects for row' + row)
         return gold_standard
