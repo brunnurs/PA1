@@ -1,7 +1,7 @@
 import sys
-from sklearn.utils import random
 
 from active_learning.iterative_active_learner import IterativeActiveLearningAlgorithm
+from active_learning.metrics import Metrics
 from active_learning.oracle import Oracle
 from active_learning.randome_ranker import RandomRanker
 from active_learning.svm_learner import SvmLearner
@@ -80,16 +80,22 @@ def pre_processing():
 
 
 def active_learning(gold_standard, pairs_with_similarities):
+
+    metrics_oracle = Oracle(gold_standard)
+    metrics = Metrics(metrics_oracle)
+
     learner = SvmLearner()
     oracle = Oracle(gold_standard)
     ranker = RandomRanker()
-    budget = 200
-    batch_size = 1
-    # initial_training_data_percentage = 0.03  # start with 3% of the available gold standard as initial training data
+    budget = 10000
+    batch_size = 50
     initial_training_data_percentage = 0.03
-    iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, budget, batch_size,
+
+    iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
                                                                  initial_training_data_percentage)
     iterative_active_learning.start_active_learning(pairs_with_similarities)
+
+    print('====== active learning done! ======')
 
 
 if __name__ == "__main__":
@@ -120,5 +126,3 @@ if __name__ == "__main__":
 
         gs, ps = pre_processing()
         active_learning(gs, ps)
-
-

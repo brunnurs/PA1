@@ -6,4 +6,4 @@ class RandomRanker:
         print('initialize a rather simple random ranker')
 
     def rank(self, learner, data, batch_size):
-        random.sample_without_replacement(data, batch_size)
+        return random.sample_without_replacement(len(data), batch_size)

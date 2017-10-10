@@ -9,8 +9,11 @@ class SvmLearner:
             max_iter=-1, probability=False, random_state=None, shrinking=True,
             tol=0.001, verbose=False)
 
+        self.prediction = []
+
     def fit(self, x, y):
         self.svm_classifier.fit(x, y)
 
     def predict(self, x):
-        return self.svm_classifier.predict(x)
+        self.prediction = self.svm_classifier.predict(x)
+        return self.prediction
