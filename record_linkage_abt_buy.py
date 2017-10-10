@@ -3,6 +3,7 @@ import sys
 from active_learning.iterative_active_learner import IterativeActiveLearningAlgorithm
 from active_learning.metrics import Metrics
 from active_learning.oracle import Oracle
+from active_learning.random_forest_learner import RandomForestLearner
 from active_learning.randome_ranker import RandomRanker
 from active_learning.svm_learner import SvmLearner
 from blocking.blocker import has_low_jaccard_similarity
@@ -84,12 +85,13 @@ def active_learning(gold_standard, pairs_with_similarities):
     metrics_oracle = Oracle(gold_standard)
     metrics = Metrics(metrics_oracle)
 
-    learner = SvmLearner()
+    # learner = SvmLearner()
+    learner = RandomForestLearner()
     oracle = Oracle(gold_standard)
     ranker = RandomRanker()
-    budget = 10000
-    batch_size = 50
-    initial_training_data_percentage = 0.03
+    budget = 500
+    batch_size = 20
+    initial_training_data_percentage = 0.01
 
     iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
                                                                  initial_training_data_percentage)

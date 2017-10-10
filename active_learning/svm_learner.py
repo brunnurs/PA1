@@ -1,7 +1,9 @@
 from sklearn.svm import SVC
 
+from active_learning.learner import Learner
 
-class SvmLearner:
+
+class SvmLearner(Learner):
     def __init__(self):
         print('Initialize an SVM learner')
         self.svm_classifier = SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
