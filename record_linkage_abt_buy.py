@@ -1,5 +1,7 @@
 import sys
 
+import time
+
 from active_learning.iterative_active_learner import IterativeActiveLearningAlgorithm
 from active_learning.metrics import Metrics
 from active_learning.oracle import Oracle
@@ -9,7 +11,7 @@ from active_learning.svm_learner import SvmLearner
 from blocking.blocker import has_low_jaccard_similarity
 from persistance.dataimporter import DataImporter
 from persistance.pickle_service import PickleService
-from similarity.similarity import edit_distance, soft_tf_idf_cosine_similarity
+from similarity.similarity import edit_distance, SoftTfIdfSimilarity
 
 
 def _pretty_print_order_by_cosine_desc(pairs_with_similarities):
@@ -21,6 +23,7 @@ def _pretty_print_order_by_cosine_desc(pairs_with_similarities):
 
 
 def pre_processing():
+    t = time.process_time()
     data_importer = DataImporter()
 
     # import data
@@ -66,27 +69,38 @@ def pre_processing():
 
     print('====== blocking done. We are dealing now with {} pairs ======'.format(len(pairs_blocked)))
 
+    all_bag_of_words = []
+
+    for pair in pairs_blocked:
+        all_bag_of_words.append(pair['abt_record']['bag_of_words'])
+        all_bag_of_words.append(pair['buy_record']['bag_of_words'])
+
+    print('====== gathered all bag of words to calculate cosine similarity ======')
+
+    tf_idf_cosine_sim = SoftTfIdfSimilarity(all_bag_of_words)
+
     pairs_with_similarities = list(map(lambda r: {
         'abt_record': r['abt_record'],
         'buy_record': r['buy_record'],
         'edit_similarity': edit_distance(r['abt_record']['clean_string'], r['buy_record']['clean_string']),
-        'tfidf_cosine_similarity': soft_tf_idf_cosine_similarity(r['abt_record']['bag_of_words'],
-                                                                 r['buy_record']['bag_of_words'])}
+        'tfidf_cosine_similarity': tf_idf_cosine_sim.calculate_similarity(r['abt_record']['bag_of_words'],
+                                                                          r['buy_record']['bag_of_words'])}
                                        , pairs_blocked))
 
     print('====== calculated edit (levenshtein) distance and Soft-TF/IDF cosine similarity for all pairs ======')
     # _pretty_print_order_by_cosine_desc()
 
+    print('====== pre-processing done. Took {} s ======'.format(time.process_time() - t))
+
     return gold_standard, pairs_with_similarities
 
 
 def active_learning(gold_standard, pairs_with_similarities):
-
     metrics_oracle = Oracle(gold_standard)
     metrics = Metrics(metrics_oracle)
 
-    # learner = SvmLearner()
-    learner = RandomForestLearner()
+    learner = SvmLearner()
+    # learner = RandomForestLearner()
     oracle = Oracle(gold_standard)
     ranker = RandomRanker()
     budget = 500
