@@ -1,22 +1,10 @@
-from functools import reduce
-
 import numpy as np
-
-import time
-
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 
-from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score, confusion_matrix, \
-    classification_report
-from sklearn.svm import SVC
-
-from active_learning.oracle import Oracle
-from active_learning.utils import transform_to_labeled_feature_vector
-from passive_learning.passive_learner_utils import label_data
+from passive_learning.passive_learner_utils import label_data, print_metrics
+from passive_learning.sampling import SMOTE_oversampling
 from persistance.pickle_service import PickleService
-
-import pandas as pd
 
 
 def explore_random_forest_performance(data, gold_standard):
@@ -27,11 +15,12 @@ def explore_random_forest_performance(data, gold_standard):
 
     label_data(data, gold_standard)
 
-    # matches = list(filter(lambda r: r['is_match'], data))
+    # x, y = downsample_to_even_classes(data)
+    # x, y = random_oversampling(data)
+    x, y = SMOTE_oversampling(data)
+    # x, y = ADASYN_oversampling(data)
 
-    x, y = transform_to_labeled_feature_vector(data)
-
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.23, random_state=0)
 
     print('train-set shape: {}, {}'.format(np.shape(x_train), np.shape(y_train)))
     print('test-set shape: {}, {}'.format(np.shape(x_test), np.shape(y_test)))
@@ -44,20 +33,7 @@ def explore_random_forest_performance(data, gold_standard):
 
     y_predicted = clf.predict(x_test)
 
-    # all those metrics will automatically assume that 1 is the positive class and 0 is the negative one
-    # https://goo.gl/FXAS4o
-    accuracy = accuracy_score(y_test, y_predicted)
-    precision = precision_score(y_test, y_predicted)
-    recall = recall_score(y_test, y_predicted)
-    f1_metric = f1_score(y_test, y_predicted)
-
-    print('accuracy: {}, precision: {}, recall: {}, f1: {}'.format(accuracy, precision, recall, f1_metric))
-
-    cm = confusion_matrix(y_test, y_predicted)
-
-    print(pd.DataFrame(cm))
-
-    print(classification_report(y_test, y_predicted))
+    print_metrics(y_predicted, y_test)
 
 
 if __name__ == "__main__":
