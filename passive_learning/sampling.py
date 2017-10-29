@@ -25,8 +25,7 @@ def downsample_to_even_classes(data):
                     n_samples=len_small_class * 2)
 
 
-def random_oversampling(data):
-    x, y = transform_to_labeled_feature_vector(data)
+def random_oversampling(x, y):
     print('Original dataset shape {}'.format(Counter(y)))
 
     ros = RandomOverSampler(random_state=42)
@@ -36,8 +35,8 @@ def random_oversampling(data):
 
     return x_sampled, y_sampled
 
-def SMOTE_oversampling(data):
-    x, y = transform_to_labeled_feature_vector(data)
+
+def SMOTE_oversampling(x, y):
     print('Original dataset shape {}'.format(Counter(y)))
 
     smote = SMOTE(random_state=42)
@@ -47,8 +46,8 @@ def SMOTE_oversampling(data):
 
     return x_sampled, y_sampled
 
-def ADASYN_oversampling(data):
-    x, y = transform_to_labeled_feature_vector(data)
+
+def ADASYN_oversampling(x, y):
     print('Original dataset shape {}'.format(Counter(y)))
 
     adasyn = ADASYN(random_state=42)

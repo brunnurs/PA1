@@ -2,6 +2,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
 
+from active_learning.utils import transform_to_labeled_feature_vector
 from passive_learning.passive_learner_utils import label_data, print_metrics
 from passive_learning.sampling import random_oversampling, downsample_to_even_classes, SMOTE_oversampling, \
     ADASYN_oversampling
@@ -16,9 +17,11 @@ def explore_random_forest_performance(data, gold_standard):
 
     label_data(data, gold_standard)
 
+    x, y = transform_to_labeled_feature_vector(data)
+
     # x, y = downsample_to_even_classes(data)
     # x, y = random_oversampling(data)
-    x, y = SMOTE_oversampling(data)
+    x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.23, random_state=0)
