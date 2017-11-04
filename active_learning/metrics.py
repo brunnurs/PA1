@@ -23,10 +23,16 @@ class Metrics:
 
         print('initially labeled all entries with ground truth (to get faster metrics). Took {}s and we got {} matches'.format(time.process_time() - t, number_of_matches))
 
-    def print_classification_report(self, y_pred, data):
+    @staticmethod
+    def print_classification_report(y_pred, data):
         y_true = list(map(lambda r: int(r['ground_truth']), data))
 
         print('********** another active learning iteration done. We predict {} records ********** '.format(len(data)))
+        Metrics.print_classification_report_raw(y_pred, y_true)
+
+    @staticmethod
+    def print_classification_report_raw(y_pred, y_true):
+
         # all those metrics will automatically assume that 1 is the positive class and 0 is the negative one
         # https://goo.gl/FXAS4o
         accuracy = accuracy_score(y_true, y_pred)

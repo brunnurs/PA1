@@ -7,7 +7,6 @@ from sklearn.utils import resample
 
 from active_learning.utils import transform_to_labeled_feature_vector
 
-
 def downsample_to_even_classes(data):
     matches = list(filter(lambda r: r['is_match'], data))
     non_matches = list(filter(lambda r: not r['is_match'], data))

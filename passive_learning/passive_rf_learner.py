@@ -17,9 +17,9 @@ def explore_random_forest_performance(data, gold_standard):
 
     label_data(data, gold_standard)
 
-    x, y = transform_to_labeled_feature_vector(data)
+    # x, y = transform_to_labeled_feature_vector(data)
 
-    # x, y = downsample_to_even_classes(data)
+    x, y = downsample_to_even_classes(data)
     # x, y = random_oversampling(data)
     # x, y = ADASYN_oversampling(data)
 
