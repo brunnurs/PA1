@@ -99,13 +99,13 @@ def active_learning(gold_standard, pairs_with_similarities):
     metrics_oracle = Oracle(gold_standard)
     metrics = Metrics(metrics_oracle)
 
-    learner = SvmLearner()
-    # learner = RandomForestLearner()
+    # learner = SvmLearner()
+    learner = RandomForestLearner()
     oracle = Oracle(gold_standard)
     ranker = RandomRanker()
-    budget = 500
-    batch_size = 20
-    initial_training_data_percentage = 0.01
+    budget = 15000
+    batch_size = 15000
+    initial_training_data_percentage = 0.03
 
     iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
                                                                  initial_training_data_percentage)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     print('====== start program with parameters ======')
     print('\r\n'.join(map(str, sys.argv)))
 
-    if sys.argv[1] == 'pre_process_only':
+    if sys.argv[1] == 'pre_processing_only':
         print('====== start pre-processing data ======')
 
         gs, ps = pre_processing()

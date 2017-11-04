@@ -1,6 +1,8 @@
 from collections import Counter
 
+from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler
 from sklearn.utils import resample
 
 from active_learning.utils import transform_to_labeled_feature_vector
@@ -53,6 +55,28 @@ def ADASYN_oversampling(x, y):
     adasyn = ADASYN(random_state=42)
     x_sampled, y_sampled = adasyn.fit_sample(x, y)
 
-    ('With ADASYN sampled dataset shape {}'.format(Counter(y_sampled)))
+    print('With ADASYN sampled dataset shape {}'.format(Counter(y_sampled)))
+
+    return x_sampled, y_sampled
+
+
+def SMOTEENN_oversampling(x, y):
+    print('Original dataset shape {}'.format(Counter(y)))
+
+    smote_enn = SMOTEENN(random_state=42)
+    x_sampled, y_sampled = smote_enn.fit_sample(x, y)
+
+    print('With SMOTEENN sampled dataset shape {}'.format(Counter(y_sampled)))
+
+    return x_sampled, y_sampled
+
+
+def random_undersampling(x, y):
+    print('Original dataset shape {}'.format(Counter(y)))
+
+    rus = RandomUnderSampler(random_state=42)
+    x_sampled, y_sampled = rus.fit_sample(x, y)
+
+    print('With RandomUnderSampler sampled dataset shape {}'.format(Counter(y_sampled)))
 
     return x_sampled, y_sampled

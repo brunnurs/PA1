@@ -4,7 +4,8 @@ from sklearn.model_selection import train_test_split
 
 from active_learning.utils import transform_to_labeled_feature_vector
 from passive_learning.passive_learner_utils import label_data, print_metrics
-from passive_learning.sampling import SMOTE_oversampling
+from passive_learning.sampling import SMOTE_oversampling, ADASYN_oversampling, downsample_to_even_classes, \
+    random_oversampling, SMOTEENN_oversampling, random_undersampling
 from persistance.pickle_service import PickleService
 
 
@@ -20,15 +21,16 @@ def explore_random_forest_performance(data, gold_standard):
 
     # x, y = downsample_to_even_classes(data)
     # x, y = random_oversampling(data)
-    x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.23, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
 
     print('train-set shape: {}, {}'.format(np.shape(x_train), np.shape(y_train)))
     print('test-set shape: {}, {}'.format(np.shape(x_test), np.shape(y_test)))
 
-    clf = RandomForestClassifier(n_estimators=500, oob_score=True)
+    # x_train, y_train = random_undersampling(x, y)
+
+    clf = RandomForestClassifier(n_estimators=500)
 
     clf.fit(x_train, y_train)
 

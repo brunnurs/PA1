@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from active_learning.utils import transform_to_labeled_feature_vector
 from passive_learning.passive_learner_utils import label_data, print_metrics
 from passive_learning.sampling import random_oversampling, downsample_to_even_classes, SMOTE_oversampling, \
-    ADASYN_oversampling
+    ADASYN_oversampling, random_undersampling
 from persistance.pickle_service import PickleService
 
 
@@ -21,15 +21,18 @@ def explore_random_forest_performance(data, gold_standard):
 
     # x, y = downsample_to_even_classes(data)
     # x, y = random_oversampling(data)
-    x, y = SMOTE_oversampling(x, y)
+    # x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.23, random_state=0)
 
     # find_best_parameters_grid_search(x_test, x_train, y_test, y_train)
-
+    #
     # those parameters have been found by grid search
-    clf = SVC(C=10, gamma=10, kernel='rbf')
+    # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={1: 19})
+    clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None)
+
+    x_train, y_train = random_undersampling(x_train, y_train)
 
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)

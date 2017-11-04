@@ -1,14 +1,11 @@
 import time
 from functools import reduce
 
+import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, \
     classification_report
-from sklearn.utils import resample
 
 from active_learning.oracle import Oracle
-from active_learning.utils import transform_to_labeled_feature_vector
-
-import pandas as pd
 
 
 def label_data(data, gold_standard):
