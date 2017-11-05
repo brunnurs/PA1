@@ -2,7 +2,7 @@ import time
 from functools import reduce
 
 from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score, \
-    confusion_matrix
+    confusion_matrix, cohen_kappa_score
 
 from active_learning.oracle import Oracle
 
@@ -39,9 +39,14 @@ class Metrics:
         precision = precision_score(y_true, y_pred)
         recall = recall_score(y_true, y_pred)
         f1_metric = f1_score(y_true, y_pred)
+
+        # The Kappa or Cohen’s kappa is the classification accuracy normalized by the imbalance of the classes in the data.
+        cohen_kappa = cohen_kappa_score(y_true, y_pred)
+
         print()
         print('=========== Results ===========')
-        print('accuracy: {}, precision: {}, recall: {}, f1: {}'.format(accuracy, precision, recall, f1_metric))
+        print('accuracy: {}, Cohen\'s kappa: {}, precision: {}, recall: {}, f1: {}'
+              .format(accuracy, cohen_kappa, precision, recall, f1_metric))
         print('=========== Results ===========')
         print()
         print('----------- Confusion Matrix -----------')

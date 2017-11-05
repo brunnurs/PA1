@@ -1,3 +1,5 @@
+import numpy as np
+
 def transform_to_labeled_feature_vector(labeled_data):
     # x = []
     # y = []
@@ -9,7 +11,7 @@ def transform_to_labeled_feature_vector(labeled_data):
     x = transform_to_feature_vector(labeled_data)
     y = list(map(lambda r: int(r['is_match']), labeled_data))
 
-    return x, y
+    return np.array(x), np.array(y)
 
 
 def transform_to_feature_vector(data):
