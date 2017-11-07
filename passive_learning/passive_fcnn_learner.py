@@ -61,15 +61,8 @@ def train_evaluate_model(model, x_test, x_train, y_test, y_train):
 
     Metrics.print_classification_report_raw(y_pred, y_test)
 
-    # loss_and_metrics = model.evaluate(x_test, y_test, batch_size=128)
-    # print(loss_and_metrics)
-    # plt.plot(loss_and_metrics['acc'])
-    # plt.plot(loss_and_metrics['val_acc'])
-    # plt.title('model accuracy')
-    # plt.ylabel('accuracy')
-    # plt.xlabel('epoch')
-    # plt.legend(['train acc', 'test acc'], loc='lower right')
-    # plt.show()
+    probas_pred = model.predict(x_test, batch_size=128, verbose=verbose)
+    Metrics.plot_precision_recall_curve(y_test, probas_pred)
 
 
 def create_keras_model():

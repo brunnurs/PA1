@@ -65,10 +65,8 @@ class Metrics:
         print()
 
     @staticmethod
-    def plot_precision_recall_curve(x_test, y_test, clf):
-        y_score = clf.decision_function(x_test)
-
-        precision, recall, _ = precision_recall_curve(y_test, y_score)
+    def plot_precision_recall_curve(y_true, probas_pred):
+        precision, recall, _ = precision_recall_curve(y_true, probas_pred)
 
         plt.step(recall, precision, color='b', alpha=0.2,
                  where='post')
