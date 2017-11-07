@@ -1,9 +1,25 @@
-from py_stringmatching import Levenshtein, SoftTfIdf, Jaro
+from py_stringmatching import Levenshtein, SoftTfIdf, Jaro, MongeElkan, GeneralizedJaccard
 
 
 def edit_distance(s1, s2):
     lev = Levenshtein()
     return lev.get_sim_score(s1, s2)
+
+
+class MongeElkanSimilarity:
+    def __init__(self) -> None:
+        self.monge_elkan = MongeElkan()
+
+    def calculate_similarity(self, s1_tokenized, s2_tokenized):
+        return self.monge_elkan.get_raw_score(s1_tokenized, s2_tokenized)
+
+
+class GeneralizedJaccardSimilarity:
+    def __init__(self) -> None:
+        self.generalized_jaccard = GeneralizedJaccard()
+
+    def calculate_similarity(self, s1_tokenized, s2_tokenized):
+        return self.generalized_jaccard.get_raw_score(s1_tokenized, s2_tokenized)
 
 
 class SoftTfIdfSimilarity:

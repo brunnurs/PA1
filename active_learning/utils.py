@@ -15,7 +15,10 @@ def transform_to_labeled_feature_vector(labeled_data):
 
 
 def transform_to_feature_vector(data):
-    return list(map(lambda r: [r['edit_similarity'], r['tfidf_cosine_similarity']], data))
+    return list(map(lambda r: [r['edit_similarity'],
+                               r['tfidf_cosine_similarity'],
+                               r['monge_elkan_similarity'],
+                               r['generalized_jaccard_similarity']], data))
 
 
 def map_predictions_to_data(predictions, data):

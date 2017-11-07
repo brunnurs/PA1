@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
+from active_learning.metrics import Metrics
 from active_learning.utils import transform_to_labeled_feature_vector
 from passive_learning.passive_learner_utils import label_data, print_metrics
 from passive_learning.sampling import SMOTE_oversampling, ADASYN_oversampling, downsample_to_even_classes, \
@@ -17,9 +18,9 @@ def explore_random_forest_performance(data, gold_standard):
 
     label_data(data, gold_standard)
 
-    # x, y = transform_to_labeled_feature_vector(data)
+    x, y = transform_to_labeled_feature_vector(data)
 
-    x, y = downsample_to_even_classes(data)
+    # x, y = downsample_to_even_classes(data)
     # x, y = random_oversampling(data)
     # x, y = ADASYN_oversampling(data)
 
@@ -28,17 +29,15 @@ def explore_random_forest_performance(data, gold_standard):
     print('train-set shape: {}, {}'.format(np.shape(x_train), np.shape(y_train)))
     print('test-set shape: {}, {}'.format(np.shape(x_test), np.shape(y_test)))
 
-    # x_train, y_train = random_undersampling(x, y)
+    x_train, y_train = SMOTE_oversampling(x_train, y_train)
 
     clf = RandomForestClassifier(n_estimators=500)
 
     clf.fit(x_train, y_train)
 
-    print('Random forest score: {}'.format(clf.score(x_test, y_test)))
+    y_pred = clf.predict(x_test)
 
-    y_predicted = clf.predict(x_test)
-
-    print_metrics(y_predicted, y_test)
+    Metrics.print_classification_report_raw(y_pred, y_test)
 
 
 if __name__ == "__main__":

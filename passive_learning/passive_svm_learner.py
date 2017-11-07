@@ -36,16 +36,16 @@ def explore_random_forest_performance(data, gold_standard):
     # those parameters have been found by grid search
     clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19}, probability=True)
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19})
-    # # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None)
+    # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None)
 
     clf.fit(x_train, y_train)
-
-    probas_pred = clf.decision_function(x_test)
-    Metrics.plot_precision_recall_curve(y_test, probas_pred)
 
     y_pred = clf.predict(x_test)
 
     Metrics.print_classification_report_raw(y_pred, y_test)
+
+    probas_pred = clf.decision_function(x_test)
+    Metrics.plot_precision_recall_curve(y_test, probas_pred)
 
 
 def find_best_parameters_grid_search(x_test, x_train, y_test, y_train):

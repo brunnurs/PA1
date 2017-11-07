@@ -55,7 +55,8 @@ def do_cross_validation(x, y):
 
 
 def train_evaluate_model(model, x_test, x_train, y_test, y_train):
-    model.fit(x_train, y_train, epochs=30, batch_size=128, verbose=verbose, class_weight={0: 1.0, 1: 19.0})
+    # model.fit(x_train, y_train, epochs=30, batch_size=128, verbose=verbose, class_weight={0: 1.0, 1: 19.0})
+    model.fit(x_train, y_train, epochs=30, batch_size=128, verbose=verbose)
 
     y_pred = model.predict_classes(x_test, batch_size=128)
 
@@ -68,7 +69,7 @@ def train_evaluate_model(model, x_test, x_train, y_test, y_train):
 def create_keras_model():
     model = Sequential()
 
-    model.add(Dense(500, batch_input_shape=(None, 2)))
+    model.add(Dense(500, batch_input_shape=(None, 4)))
     # model.add(keras.layers.normalization.BatchNormalization())
     model.add(Dropout(0.3))
     model.add(Activation('relu'))
