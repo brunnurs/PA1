@@ -1,6 +1,9 @@
 import time
 from functools import reduce
 
+from sklearn.metrics import precision_recall_curve
+import matplotlib.pyplot as plt
+
 from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score, \
     confusion_matrix, cohen_kappa_score
 
@@ -60,3 +63,22 @@ class Metrics:
         print()
         print()
         print()
+
+    @staticmethod
+    def plot_precision_recall_curve(x_test, y_test, clf):
+        y_score = clf.decision_function(x_test)
+
+        precision, recall, _ = precision_recall_curve(y_test, y_score)
+
+        plt.step(recall, precision, color='b', alpha=0.2,
+                 where='post')
+        plt.fill_between(recall, precision, step='post', alpha=0.2,
+                         color='b')
+
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.ylim([0.0, 1.05])
+        plt.xlim([0.0, 1.0])
+        plt.title('2-class Precision-Recall curve')
+
+        plt.show()
