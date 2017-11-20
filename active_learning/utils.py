@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
 
 def transform_to_labeled_feature_vector(labeled_data):
     # x = []
@@ -8,17 +10,17 @@ def transform_to_labeled_feature_vector(labeled_data):
     #     x.append([data[idx]['edit_similarity'], data[idx]['tfidf_cosine_similarity']])
     #     y.append(int(data[idx]['is_match']))
 
-    x = transform_to_feature_vector(labeled_data)
-    y = list(map(lambda r: int(r['is_match']), labeled_data))
+    x = np.array(transform_to_feature_vector(labeled_data))
+    y = np.array(list(map(lambda r: int(r['is_match']), labeled_data)))
 
-    return np.array(x), np.array(y)
+    return x, y
 
 
 def transform_to_feature_vector(data):
-    return list(map(lambda r: [r['edit_similarity'],
-                               r['tfidf_cosine_similarity'],
-                               r['monge_elkan_similarity'],
-                               r['generalized_jaccard_similarity']], data))
+    # return list(map(lambda r: [r['word_similarities_vector'],
+    #                            r['monge_elkan_similarity'],
+    #                            r['generalized_jaccard_similarity']], data))
+    return list(map(lambda r: r['word_similarities_vector'], data))
 
 
 def map_predictions_to_data(predictions, data):

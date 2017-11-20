@@ -2,6 +2,8 @@ import sys
 
 import time
 
+from py_stringmatching import JaroWinkler
+
 from active_learning.iterative_active_learner import IterativeActiveLearningAlgorithm
 from active_learning.metrics import Metrics
 from active_learning.oracle import Oracle
@@ -11,7 +13,12 @@ from active_learning.svm_learner import SvmLearner
 from blocking.blocker import has_low_jaccard_similarity
 from persistance.dataimporter import DataImporter
 from persistance.pickle_service import PickleService
+from preprocessing.word_vector_similarity import WordVectorSimilarity
 from similarity.similarity import edit_distance, SoftTfIdfSimilarity, MongeElkanSimilarity, GeneralizedJaccardSimilarity
+
+import multiprocessing as mp
+
+from similarity.similarity_calculator import SimilarityCalculator
 
 
 def _pretty_print_order_by_cosine_desc(pairs_with_similarities):
@@ -75,30 +82,9 @@ def pre_processing():
         all_bag_of_words.append(pair['abt_record']['bag_of_words'])
         all_bag_of_words.append(pair['buy_record']['bag_of_words'])
 
-    print('====== gathered all bag of words to calculate cosine similarity ======')
+    print('====== gathered all bag of words to calculate similarities ======')
 
-    tf_idf_cosine_sim = SoftTfIdfSimilarity(all_bag_of_words)
-    monge_elkan_sim = MongeElkanSimilarity()
-    generalized_jaccard_sim = GeneralizedJaccardSimilarity()
-
-    pairs_with_similarities = []
-
-    for idx, pair in enumerate(pairs_blocked):
-        pairs_with_similarities.append({
-            'abt_record': pair['abt_record'],
-            'buy_record': pair['buy_record'],
-            'edit_similarity': edit_distance(pair['abt_record']['clean_string'], pair['buy_record']['clean_string']),
-            'tfidf_cosine_similarity': tf_idf_cosine_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
-                                                                              pair['buy_record']['bag_of_words']),
-            'monge_elkan_similarity': monge_elkan_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
-                                                                           pair['buy_record']['bag_of_words']),
-            'generalized_jaccard_similarity': generalized_jaccard_sim.calculate_similarity(
-                pair['abt_record']['bag_of_words'],
-                pair['buy_record']['bag_of_words']),
-        })
-
-        if idx % 100 == 0:
-            print('Calculated similarities for {} of {} paris'.format(idx, len(pairs_blocked)))
+    pairs_with_similarities = SimilarityCalculator().calculate_pairs_with_similarities(pairs_blocked, all_bag_of_words)
 
     print('====== calculated similarities for all pairs ======')
     # _pretty_print_order_by_cosine_desc()
