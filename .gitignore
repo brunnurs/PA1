@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# don't save the preprocessed files as they are too large for github
+data/intermediate_data/
+
