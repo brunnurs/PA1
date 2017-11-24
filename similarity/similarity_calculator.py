@@ -1,8 +1,14 @@
+import functools
 from py_stringmatching import JaroWinkler
 
 from preprocessing.word_vector_similarity import WordVectorSimilarity
 
 import multiprocessing as mp
+
+# don't hate me for this :-( But has just no priority right now...
+# https://stackoverflow.com/questions/2080660/python-multiprocessing-and-a-shared-counter
+
+counter = None
 
 
 def _calculate_pairs_with_similarities_old_way(pairs_blocked, word_vector_similarities):
@@ -25,13 +31,16 @@ def _calculate_pairs_with_similarities_old_way(pairs_blocked, word_vector_simila
         })
 
         if idx % 100 == 0:
-            print('Calculated similarities for {} of {} paris'.format(idx, len(pairs_blocked)))
+            print('Calculated similarities for {} of {} pairs'.format(idx, len(pairs_blocked)))
     return pairs_with_similarities
 
 
 def calculate_similarity(pair, word_vector_similarities):
-    print('calculate similarity for pair with ids {}/{}'
-          .format(pair['abt_record'].entry_id, pair['buy_record'].entry_id))
+    global counter
+    counter.increment()
+
+    if counter.value % 100 == 0:
+        print('Calculated similarities for {} pairs'.format(counter.value))
 
     return {
         'abt_record': pair['abt_record'],
@@ -51,23 +60,52 @@ def calculate_similarity(pair, word_vector_similarities):
 
 
 class SimilarityCalculator:
-    def __init__(self):
-        print('Initialize an Random forest learner')
-
-        self.prediction = []
-
     def calculate_pairs_with_similarities(self, pairs_blocked, all_bag_of_words):
+
         # tf_idf_cosine_sim = SoftTfIdfSimilarity(all_bag_of_words)
         # monge_elkan_sim = MongeElkanSimilarity()
         # generalized_jaccard_sim = GeneralizedJaccardSimilarity()
 
         word_vector_similarities = WordVectorSimilarity(all_bag_of_words, JaroWinkler().get_raw_score)
 
-        # pairs_with_similarities = _calculate_pairs_with_similarities_old_way(pairs_blocked,
-        #                                                                           word_vector_similarities)
+        counter = Counter()
+        pool = mp.Pool(processes=6, initializer=counter_initializer, initargs=(counter,))
 
-        pool = mp.Pool(processes=4)
-        pairs_with_similarities = pool.map(lambda pair: calculate_similarity(pair, word_vector_similarities),
-                                           pairs_blocked[:1000])
+        # This is only necessary because the pool.map() can not handle lambdas (see
+        # https://stackoverflow.com/questions/4827432/how-to-let-pool-map-take-a-lambda-function)
+        #
+        # pairs_with_similarities = pool.map(lambda pair: calculate_similarity(pair, word_vector_similarities),
+        #                                    pairs_blocked)
+        similarity_func_with_one_argument = functools.partial(calculate_similarity,
+                                                              word_vector_similarities=word_vector_similarities)
+
+        pairs_with_similarities = pool.map(similarity_func_with_one_argument,
+                                           pairs_blocked)
+
+        # pairs_with_similarities2 = _calculate_pairs_with_similarities_old_way(pairs_blocked,
+        #                                                                       word_vector_similarities)
 
         return pairs_with_similarities
+
+
+def counter_initializer(args):
+    global counter
+    counter = args
+
+
+class Counter(object):
+    """ Thread-safe counter
+    See
+    https://stackoverflow.com/questions/2080660/python-multiprocessing-and-a-shared-counter
+    """
+
+    def __init__(self):
+        self.val = mp.Value('i', 0)
+
+    def increment(self, n=1):
+        with self.val.get_lock():
+            self.val.value += n
+
+    @property
+    def value(self):
+        return self.val.value
