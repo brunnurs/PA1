@@ -27,7 +27,7 @@ def explore_fcNN_performance(data, gold_standard):
     indices = range(len(x))
 
     # activate me if working with word-vector similarities!
-    x = MaxAbsScaler().fit_transform(x)
+    # x = MaxAbsScaler().fit_transform(x)
 
     # do_cross_validation(x, y)
 
