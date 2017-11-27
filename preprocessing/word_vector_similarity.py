@@ -9,10 +9,16 @@ import numpy as np
 
 class WordVectorSimilarity:
     def __init__(self, corpus_list=None, sim_func=Jaro().get_raw_score,
-                 threshold=0.5):
+                 threshold=0.95):
         self.__corpus_list = corpus_list
         self.__document_frequency = {}
         self.__compute_document_frequency()
+
+        # TODO remove me. Just to get the most common words
+        # import operator
+        # sorted_x = sorted(self.__document_frequency.items(), key=operator.itemgetter(1))
+        # sorted_zz = sorted_x.reverse()
+
         self.__corpus_size = 0 if self.__corpus_list is None else (
             len(self.__corpus_list))
         self.sim_func = sim_func

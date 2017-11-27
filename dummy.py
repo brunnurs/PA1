@@ -1,15 +1,7 @@
-import multiprocessing as mp
+from py_stringmatching import Jaro
+
+from persistance.dataimporter import DataImporter
 
 if __name__ == "__main__":
 
-    def processInput(i):
-        return i * i
-
-    # what are your inputs, and what operation do you want to
-    # perform on each input. For example...
-    inputs = range(1000000)
-    #  removing processes argument makes the code run on all available cores
-    pool = mp.Pool(processes=4)
-    results = pool.map(processInput, inputs)
-
-    print(results)
+    print(Jaro().get_raw_score('lg', 'lg'))

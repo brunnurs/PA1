@@ -23,8 +23,8 @@ class GeneralizedJaccardSimilarity:
 
 
 class SoftTfIdfSimilarity:
-    def __init__(self, corpus_list) -> None:
-        self.soft_tf_idf = SoftTfIdf(corpus_list, sim_func=Jaro().get_raw_score, threshold=0.8)
+    def __init__(self, corpus_list, threshold=0.95) -> None:
+        self.soft_tf_idf = SoftTfIdf(corpus_list, sim_func=Jaro().get_raw_score, threshold=threshold)
 
     def calculate_similarity(self, s1_tokenized, s2_tokenized):
         """

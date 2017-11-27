@@ -48,6 +48,7 @@ def pre_processing():
         abt_data[abt_key] = {
             'record_id': abt_data[abt_key].entry_id,
             'bag_of_words': abt_data[abt_key].transform_to_bag_of_words(),
+            'bag_of_words_name': abt_data[abt_key].transform_to_bag_of_words_name(),
             'clean_string': abt_data[abt_key].transform_to_clean_string(),
         }
 
@@ -55,6 +56,7 @@ def pre_processing():
         buy_data[buy_data_key] = {
             'record_id': buy_data[buy_data_key].entry_id,
             'bag_of_words': buy_data[buy_data_key].transform_to_bag_of_words(),
+            'bag_of_words_name': buy_data[buy_data_key].transform_to_bag_of_words_name(),
             'clean_string': buy_data[buy_data_key].transform_to_clean_string()
         }
 
@@ -76,15 +78,20 @@ def pre_processing():
 
     print('====== blocking done. We are dealing now with {} pairs ======'.format(len(pairs_blocked)))
 
-    all_bag_of_words = []
+    corpus_list_original = []
+    corpus_list_abt_name_only = []
 
     for pair in pairs_blocked:
-        all_bag_of_words.append(pair['abt_record']['bag_of_words'])
-        all_bag_of_words.append(pair['buy_record']['bag_of_words'])
+        corpus_list_original.append(pair['abt_record']['bag_of_words'])
+        corpus_list_original.append(pair['buy_record']['bag_of_words'])
+        corpus_list_abt_name_only.append(pair['abt_record']['bag_of_words_name'])
+        corpus_list_abt_name_only.append(pair['buy_record']['bag_of_words'])
 
     print('====== gathered all bag of words to calculate similarities ======')
 
-    pairs_with_similarities = SimilarityCalculator().calculate_pairs_with_similarities(pairs_blocked, all_bag_of_words)
+    pairs_with_similarities = SimilarityCalculator().calculate_pairs_with_similarities(pairs_blocked,
+                                                                                       corpus_list_original,
+                                                                                       corpus_list_abt_name_only)
 
     print('====== calculated similarities for all pairs ======')
     # _pretty_print_order_by_cosine_desc()
