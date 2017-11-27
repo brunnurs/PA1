@@ -23,10 +23,11 @@ def explore_fcNN_performance(data, gold_standard):
     label_data(data, gold_standard)
 
     x, y = transform_to_labeled_feature_vector(data)
-    indices = range(len(x))
     # x, y = random_undersampling(x, y)
+    indices = range(len(x))
 
-    # x = MaxAbsScaler().fit_transform(x)
+    # activate me if working with word-vector similarities!
+    x = MaxAbsScaler().fit_transform(x)
 
     # do_cross_validation(x, y)
 

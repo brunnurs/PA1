@@ -12,29 +12,6 @@ from similarity.similarity import SoftTfIdfSimilarity
 counter = None
 
 
-# def _calculate_pairs_with_similarities_old_way(pairs_blocked, word_vector_similarities):
-#     pairs_with_similarities = []
-#     for idx, pair in enumerate(pairs_blocked):
-#         pairs_with_similarities.append({
-#             'abt_record': pair['abt_record'],
-#             'buy_record': pair['buy_record'],
-#             # 'tfidf_cosine_similarity': tf_idf_cosine_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
-#             #                                                                   pair['buy_record']['bag_of_words']),
-#             # 'monge_elkan_similarity': monge_elkan_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
-#             #                                                                pair['buy_record']['bag_of_words']),
-#             # 'generalized_jaccard_similarity': generalized_jaccard_sim.calculate_similarity(
-#             #     pair['abt_record']['bag_of_words'],
-#             #     pair['buy_record']['bag_of_words']),
-#             'word_similarities_vector': word_vector_similarities.get_word_vector_similarities_tf_idf(
-#                 pair['abt_record']['bag_of_words'],
-#                 pair['buy_record']['bag_of_words'])
-#         })
-#
-#         if idx % 100 == 0:
-#             print('Calculated similarities for {} of {} pairs'.format(idx, len(pairs_blocked)))
-#     return pairs_with_similarities
-
-
 def calculate_similarity(pair, word_vector_similarities, tf_idf_cosine_sim, tf_idf_cosine_sim_abt_name_only):
     global counter
     counter.increment()
@@ -122,3 +99,26 @@ class Counter(object):
     @property
     def value(self):
         return self.val.value
+
+
+# def _calculate_pairs_with_similarities_old_way(pairs_blocked, word_vector_similarities):
+#     pairs_with_similarities = []
+#     for idx, pair in enumerate(pairs_blocked):
+#         pairs_with_similarities.append({
+#             'abt_record': pair['abt_record'],
+#             'buy_record': pair['buy_record'],
+#             # 'tfidf_cosine_similarity': tf_idf_cosine_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
+#             #                                                                   pair['buy_record']['bag_of_words']),
+#             # 'monge_elkan_similarity': monge_elkan_sim.calculate_similarity(pair['abt_record']['bag_of_words'],
+#             #                                                                pair['buy_record']['bag_of_words']),
+#             # 'generalized_jaccard_similarity': generalized_jaccard_sim.calculate_similarity(
+#             #     pair['abt_record']['bag_of_words'],
+#             #     pair['buy_record']['bag_of_words']),
+#             'word_similarities_vector': word_vector_similarities.get_word_vector_similarities_tf_idf(
+#                 pair['abt_record']['bag_of_words'],
+#                 pair['buy_record']['bag_of_words'])
+#         })
+#
+#         if idx % 100 == 0:
+#             print('Calculated similarities for {} of {} pairs'.format(idx, len(pairs_blocked)))
+#     return pairs_with_similarities
