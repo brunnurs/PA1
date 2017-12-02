@@ -40,7 +40,7 @@ def explore_fcNN_performance(data, gold_standard):
     # x_train, y_train = SMOTE_oversampling(x_train, y_train)
 
     model = create_keras_model(np.shape(x)[1])
-    train_evaluate_model(model, x_test, x_train, y_test, y_train, do_plot=False)
+    train_evaluate_model(model, x_test, x_train, y_test, y_train, do_plot=True)
 
     # save_information_about_predictions(model, x_test, y_test, indices_test, data)
 

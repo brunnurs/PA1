@@ -27,16 +27,17 @@ def explore_random_forest_performance(data, gold_standard):
     # x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
 
     # x_train, y_train = SMOTE_oversampling(x_train, y_train)
 
     # find_best_parameters_grid_search(x_test, x_train, y_test, y_train)
 
     # those parameters have been found by grid search
-    clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19}, probability=True)
+    # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19}, probability=True)
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19})
-    # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None)
+
+    clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None, probability=True)
 
     clf.fit(x_train, y_train)
 

@@ -9,8 +9,6 @@ def tf_idf_with_corpse():
     with open('tf_idf_similarity_jaro_95', 'rb') as handle:
         tf_idf_similarity = pickle.load(handle)
 
-        # tf_idf_similarity = SoftTfIdf(sim_func=Jaro().get_raw_score, threshold=0.95)
-
         abt = 'ge futura indoor tv antenna tv24746 specially designed to receive digital tv signal 20db gain amplification noise eliminator circuitry filter designed to mount horizontally or vertically'
         buy = 'ge 24746 futura tm indoor hdtv antenna ge'
 
@@ -105,6 +103,6 @@ def save_information_about_predictions(model, x_test, y_test, indices_test, data
 
 
 if __name__ == "__main__":
-    # manual_analytics()
+    manual_analytics()
     tf_idf_with_corpse()
     jaro_simple_word_similarity()

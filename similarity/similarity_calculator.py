@@ -61,9 +61,6 @@ class SimilarityCalculator:
 
         # This is only necessary because the pool.map() can not handle lambdas (see
         # https://stackoverflow.com/questions/4827432/how-to-let-pool-map-take-a-lambda-function)
-        #
-        # pairs_with_similarities = pool.map(lambda pair: calculate_similarity(pair, word_vector_similarities),
-        #                                    pairs_blocked)
         similarity_func_with_one_argument = functools.partial(calculate_similarity,
                                                               word_vector_similarities=word_vector_similarities,
                                                               tf_idf_cosine_sim=tf_idf_cosine_sim,

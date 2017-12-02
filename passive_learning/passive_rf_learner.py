@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 from active_learning.metrics import Metrics
 from active_learning.utils import transform_to_labeled_feature_vector
-from passive_learning.passive_learner_utils import label_data, print_metrics
+from passive_learning.passive_learner_utils import label_data
 from passive_learning.sampling import SMOTE_oversampling, ADASYN_oversampling, downsample_to_even_classes, \
     random_oversampling, SMOTEENN_oversampling, random_undersampling
 from persistance.pickle_service import PickleService
@@ -24,12 +24,10 @@ def explore_random_forest_performance(data, gold_standard):
     # x, y = random_oversampling(data)
     # x, y = ADASYN_oversampling(data)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42, stratify=y)
 
     print('train-set shape: {}, {}'.format(np.shape(x_train), np.shape(y_train)))
     print('test-set shape: {}, {}'.format(np.shape(x_test), np.shape(y_test)))
-
-    x_train, y_train = SMOTE_oversampling(x_train, y_train)
 
     clf = RandomForestClassifier(n_estimators=500)
 
@@ -38,6 +36,7 @@ def explore_random_forest_performance(data, gold_standard):
     y_pred = clf.predict(x_test)
 
     Metrics.print_classification_report_raw(y_pred, y_test)
+    # Metrics.plot_precision_recall_curve(y_test, probas_pred)
 
 
 if __name__ == "__main__":
