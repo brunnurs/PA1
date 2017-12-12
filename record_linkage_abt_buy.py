@@ -1,5 +1,7 @@
 import sys
 
+import numpy
+
 import time
 
 from py_stringmatching import JaroWinkler
@@ -105,26 +107,32 @@ def active_learning(gold_standard, pairs_with_similarities):
     metrics_oracle = Oracle(gold_standard)
     metrics = Metrics(metrics_oracle)
 
-    # learner = SvmLearner()
-    learner = RandomForestLearner()
+    learner = SvmLearner()
+    # learner = RandomForestLearner()
     oracle = Oracle(gold_standard)
     ranker = RandomRanker()
-    budget = 15000
-    batch_size = 15000
-    initial_training_data_percentage = 0.03
+    budget = 18000
+    batch_size = 10
+    initial_training_data_size = 10
 
     iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
-                                                                 initial_training_data_percentage)
+                                                                 initial_training_data_size)
+
     iterative_active_learning.start_active_learning(pairs_with_similarities)
+
+    metrics.plot_learning_curve()
 
     print('====== active learning done! ======')
 
 
 if __name__ == "__main__":
+
+    numpy.random.seed(42)
+
     print('====== start program with parameters ======')
     print('\r\n'.join(map(str, sys.argv)))
 
-    if sys.argv[1] == 'pre_processing_only':
+    if sys.argv[1] == 'pre_processing':
         print('====== start pre-processing data ======')
 
         gs, ps = pre_processing()
@@ -135,16 +143,11 @@ if __name__ == "__main__":
 
         print('====== saved pre-processed data and end program ======')
 
-    elif sys.argv[1] == 'active_learning_only':
+    elif sys.argv[1] == 'active_learning':
         print('====== start active learning with intermediate data ======')
 
         pickle = PickleService()
         ps = pickle.load_pre_processed_data('./data/intermediate_data')
         gs = pickle.load_gold_standard_data('./data/intermediate_data')
 
-        active_learning(gs, ps)
-    else:
-        print('====== start both, pre-processing and active learning ======')
-
-        gs, ps = pre_processing()
         active_learning(gs, ps)
