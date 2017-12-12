@@ -15,6 +15,8 @@ import pandas as pd
 class Metrics:
     def __init__(self, oracle: Oracle):
         self.oracle = oracle
+        self.number_of_training_examples = []
+        self.f1_values = []
 
     def label_with_ground_truth(self, data):
         t = time.process_time()
@@ -24,14 +26,28 @@ class Metrics:
 
         number_of_matches = reduce(lambda x, r: x + (1 if r['ground_truth'] is True else 0), data, 0)
 
-        print('initially labeled all entries with ground truth (to get faster metrics). Took {}s and we got {} matches'.format(time.process_time() - t, number_of_matches))
+        print('initially labeled all entries with ground truth (to get faster metrics). Took {}s and we got {} matches'
+              .format(time.process_time() - t, number_of_matches))
 
-    @staticmethod
-    def print_classification_report(y_pred, data):
+    def print_statistics(self, y_pred, data, number_of_training_examples):
+
         y_true = list(map(lambda r: int(r['ground_truth']), data))
 
-        print('********** another active learning iteration done. We predict {} records ********** '.format(len(data)))
+        print('******* another active learning iteration done. Train on {} samples. Predict on {} samples ******* '
+              .format(number_of_training_examples, len(data)))
+
         Metrics.print_classification_report_raw(y_pred, y_true)
+
+        self.number_of_training_examples.append(number_of_training_examples)
+        self.f1_values.append(f1_score(y_true, y_pred))
+
+    def plot_learning_curve(self):
+        plt.plot(self.number_of_training_examples, self.f1_values)
+        plt.ylabel('f1 value (matches only)')
+        plt.xlabel('size training set')
+        plt.title('learning curve')
+
+        plt.show()
 
     @staticmethod
     def print_classification_report_raw(y_pred, y_true):
