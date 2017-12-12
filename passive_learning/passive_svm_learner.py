@@ -12,7 +12,7 @@ from passive_learning.sampling import random_oversampling, downsample_to_even_cl
 from persistance.pickle_service import PickleService
 
 
-def explore_random_forest_performance(data, gold_standard):
+def explore_svm_performance(data, gold_standard):
     """
     The goal of this method is to find out what's the best possible score to get with a random forest model given the
     data we prepare in pre processing.
@@ -38,6 +38,7 @@ def explore_random_forest_performance(data, gold_standard):
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19})
 
     clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None, probability=True)
+    # clf = SVC(C=100, kernel='linear', class_weight=None, probability=True)
 
     clf.fit(x_train, y_train)
 
@@ -89,4 +90,4 @@ if __name__ == "__main__":
     ps = pickle.load_pre_processed_data('./data/intermediate_data')
     gs = pickle.load_gold_standard_data('./data/intermediate_data')
 
-    explore_random_forest_performance(ps, gs)
+    explore_svm_performance(ps, gs)
