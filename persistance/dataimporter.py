@@ -8,9 +8,6 @@ class DataImporter:
     ABT_FILE_NAME = 'Abt.csv'
     BUY_FILE_NAME = 'Buy.csv'
     ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_perfectMapping.csv'
-    # ABT_FILE_NAME = 'abt_small.csv'
-    # BUY_FILE_NAME = 'buy_small.csv'
-    # ABT_BUY_GOLD_STANDARD_FILE_NAME = 'abt_buy_almost_empty.csv'
 
     def __init__(self):
         print('initialize data importer')
