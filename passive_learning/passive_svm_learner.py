@@ -5,6 +5,7 @@ from sklearn.metrics import cohen_kappa_score, make_scorer
 
 
 from active_learning.metrics import Metrics
+from active_learning.svm_learner import SvmLearner
 from active_learning.utils import transform_to_labeled_feature_vector
 from passive_learning.passive_learner_utils import label_data
 from passive_learning.sampling import random_oversampling, downsample_to_even_classes, SMOTE_oversampling, \
@@ -22,7 +23,7 @@ def explore_svm_performance(data, gold_standard):
 
     x, y = transform_to_labeled_feature_vector(data)
 
-    # x, y = downsample_to_even_classes(data)
+    # x, y = downsample_to_even_classes(data)svm
     # x, y = random_oversampling(data)
     # x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
@@ -37,7 +38,7 @@ def explore_svm_performance(data, gold_standard):
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19}, probability=True)
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19})
 
-    clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None, probability=True)
+    clf = SvmLearner()
     # clf = SVC(C=100, kernel='linear', class_weight=None, probability=True)
 
     clf.fit(x_train, y_train)
@@ -46,7 +47,7 @@ def explore_svm_performance(data, gold_standard):
 
     Metrics.print_classification_report_raw(y_pred, y_test)
 
-    probas_pred = clf.decision_function(x_test)
+    probas_pred = clf.clf_.decision_function(x_test)
     Metrics.plot_precision_recall_curve(y_test, probas_pred)
 
 

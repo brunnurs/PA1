@@ -8,20 +8,22 @@ from active_learning.learner import Learner
 class SvmLearner(Learner):
     def __init__(self):
         print('Initialize an SVM learner')
-        self.clf = SVC(C=10, gamma=10, kernel='rbf', class_weight=None, probability=True)
+        self.clf_ = SVC(C=10, gamma=10, kernel='rbf', class_weight=None, probability=True)
         # self.clf = SVC(C=100, kernel='linear', class_weight=None, probability=True)
 
         self.prediction = []
 
     def fit(self, x, y):
-        self.clf.fit(x, y)
+        self.clf_.fit(x, y)
 
-        # if len(x) == 20 or len(x) == 60 or len(x) == 300 or len(x) == 600 or len(x) == 990:
+        # if len(x) == 20 or len(x) == 60 or len(x) == 120 or len(x) == 800:
         #     self.plot_classifier_and_scatter_data(self.clf, x, y)
 
     def predict(self, x):
-        self.prediction = self.clf.predict(x)
-        return self.prediction
+        return self.clf_.predict(x)
+
+    def variance(self):
+        return 1
 
     @staticmethod
     def plot_classifier_and_scatter_data(clf, x, y):

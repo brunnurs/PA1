@@ -1,7 +1,9 @@
 from sklearn.utils import random
 
+from active_learning.ranker import Ranker
 
-class RandomRanker:
+
+class RandomRanker(Ranker):
     def __init__(self):
         print('initialize a rather simple random ranker')
 

@@ -5,6 +5,9 @@ from passive_learning.sampling import SMOTE_oversampling
 
 
 class RandomForestLearner(Learner):
+    def variance(self):
+        return 1
+
     def __init__(self):
         print('Initialize an Random forest learner')
         self.clf = RandomForestClassifier(n_estimators=500, oob_score=True)

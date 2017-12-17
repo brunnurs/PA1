@@ -6,12 +6,15 @@ import time
 
 from py_stringmatching import JaroWinkler
 
+from active_learning.ensemble_learner import EnsembleLearner
 from active_learning.iterative_active_learner import IterativeActiveLearningAlgorithm
 from active_learning.metrics import Metrics
+from active_learning.multiple_metrics_plotter import plot_multiple_metrics_learning_curve
 from active_learning.oracle import Oracle
 from active_learning.random_forest_learner import RandomForestLearner
-from active_learning.randome_ranker import RandomRanker
+from active_learning.random_ranker import RandomRanker
 from active_learning.svm_learner import SvmLearner
+from active_learning.uncertaincy_ranker import UncertaintyRanker
 from blocking.blocker import has_low_jaccard_similarity
 from persistance.dataimporter import DataImporter
 from persistance.pickle_service import PickleService
@@ -104,24 +107,38 @@ def pre_processing():
 
 
 def active_learning(gold_standard, pairs_with_similarities):
-    metrics_oracle = Oracle(gold_standard)
-    metrics = Metrics(metrics_oracle)
 
-    learner = SvmLearner()
-    # learner = RandomForestLearner()
-    oracle = Oracle(gold_standard)
-    ranker = RandomRanker()
-    budget = 18000
-    batch_size = 10
-    initial_training_data_size = 10
+    active_learning_runs = 20
 
-    iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
-                                                                 initial_training_data_size)
+    print('====== start active learning with {} runs ======'.format(active_learning_runs))
 
-    iterative_active_learning.start_active_learning(pairs_with_similarities)
+    multiple_metrics = []
+    for run in range(active_learning_runs):
 
-    metrics.plot_learning_curve()
+        metrics_oracle = Oracle(gold_standard)
+        metrics = Metrics(metrics_oracle)
 
+        # learner = SvmLearner()
+        # learner = RandomForestLearner()
+        learner = EnsembleLearner(SvmLearner, 24)
+        oracle = Oracle(gold_standard)
+        # ranker = RandomRanker()
+        ranker = UncertaintyRanker()
+        budget = 400
+        batch_size = 10
+        initial_training_data_size = 10
+
+        iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
+                                                                     initial_training_data_size)
+
+        iterative_active_learning.start_active_learning(pairs_with_similarities)
+
+        print('====== run {} done! ======'.format(run))
+
+        # metrics.plot_learning_curve()
+        multiple_metrics.append(metrics)
+
+    plot_multiple_metrics_learning_curve(multiple_metrics)
     print('====== active learning done! ======')
 
 

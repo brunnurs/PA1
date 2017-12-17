@@ -1,13 +1,15 @@
+import time
+
 from active_learning.learner import Learner
 from active_learning.metrics import Metrics
 from active_learning.oracle import Oracle
-from active_learning.randome_ranker import RandomRanker
+from active_learning.ranker import Ranker
 from active_learning.utils import transform_to_labeled_feature_vector, transform_to_feature_vector, \
     map_predictions_to_data, stratified_random_indices
 
 
 class IterativeActiveLearningAlgorithm:
-    def __init__(self, learner: Learner, oracle: Oracle, ranker: RandomRanker, metrics: Metrics, budget: int,
+    def __init__(self, learner: Learner, oracle: Oracle, ranker: Ranker, metrics: Metrics, budget: int,
                  batch_size: int, initial_training_data_size: int):
         """
         initialize the active learner. See "Calling Up Crowd-Sourcing to Very Large Datasets:
@@ -45,11 +47,18 @@ class IterativeActiveLearningAlgorithm:
         while self.oracle.interactions_with_oracle < self.budget:
             idx_to_ask_oracle = self.ranker.rank(self.learner, unlabeled_data, self.batch_size)
 
+            t = time.process_time()
             unlabeled_data, new_labeled_training_data = self._label_training_data(unlabeled_data, idx_to_ask_oracle)
             labeled_training_data.extend(new_labeled_training_data)
+            print('t labeling: {}'.format(time.process_time() - t))
 
+            t = time.process_time()
             self.learner.fit(*transform_to_labeled_feature_vector(labeled_training_data))
+            print('t fitting: {}'.format(time.process_time() - t))
+
+            t = time.process_time()
             prediction = self.learner.predict(transform_to_feature_vector(unlabeled_data))
+            print('t predicting: {}'.format(time.process_time() - t))
 
             self.metrics.print_statistics(prediction, unlabeled_data, len(labeled_training_data))
 

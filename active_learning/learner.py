@@ -9,3 +9,7 @@ class Learner(ABC):
     @abstractmethod
     def predict(self, x):
         pass
+
+    @abstractmethod
+    def variance(self):
+        pass
