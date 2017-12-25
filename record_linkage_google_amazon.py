@@ -49,67 +49,78 @@ def pre_processing():
 
     # print('\r\n'.join(map(str, gold_standard)))
 
-    # # data pre-process data
-    # for abt_key in amazon_data.keys():
-    #     amazon_data[abt_key] = {
-    #         'record_id': amazon_data[abt_key].entry_id,
-    #         'bag_of_words': amazon_data[abt_key].transform_to_bag_of_words(),
-    #         'bag_of_words_name': amazon_data[abt_key].transform_to_bag_of_words_name(),
-    #         'clean_string': amazon_data[abt_key].transform_to_clean_string(),
-    #     }
-    #
-    # for buy_data_key in google_data.keys():
-    #     google_data[buy_data_key] = {
-    #         'record_id': google_data[buy_data_key].entry_id,
-    #         'bag_of_words': google_data[buy_data_key].transform_to_bag_of_words(),
-    #         'bag_of_words_name': google_data[buy_data_key].transform_to_bag_of_words_name(),
-    #         'clean_string': google_data[buy_data_key].transform_to_clean_string()
-    #     }
-    #
-    # print('====== data pre-processing done ======')
-    #
-    # all_pairs = []
-    #
-    # # build cartesian (n * m) dataset and already calculate simple jaccard similarity
-    # for abt_key, abt_value in amazon_data.items():
-    #     for buy_key, buy_value in google_data.items():
-    #         all_pairs.append({
-    #             'abt_record': abt_value,
-    #             'buy_record': buy_value,
-    #             'has_low_similarity': has_low_jaccard_similarity(abt_value['bag_of_words'], buy_value['bag_of_words'])})
-    #
-    # print('====== built all the {} comparision records ======'.format(len(all_pairs)))
-    #
-    # pairs_blocked = list(filter(lambda r: not r['has_low_similarity'], all_pairs))
-    #
-    # print('====== blocking done. We are dealing now with {} pairs ======'.format(len(pairs_blocked)))
-    #
-    # corpus_list_original = []
-    # corpus_list_abt_name_only = []
-    #
-    # for pair in pairs_blocked:
-    #     corpus_list_original.append(pair['abt_record']['bag_of_words'])
-    #     corpus_list_original.append(pair['buy_record']['bag_of_words'])
-    #     corpus_list_abt_name_only.append(pair['abt_record']['bag_of_words_name'])
-    #     corpus_list_abt_name_only.append(pair['buy_record']['bag_of_words'])
-    #
-    # print('====== gathered all bag of words to calculate similarities ======')
-    #
-    # pairs_with_similarities = SimilarityCalculator().calculate_pairs_with_similarities(pairs_blocked,
-    #                                                                                    corpus_list_original,
-    #                                                                                    corpus_list_abt_name_only)
-    #
-    # print('====== calculated similarities for all pairs ======')
-    # # _pretty_print_order_by_cosine_desc()
-    #
-    # print('====== pre-processing done. Took {} s ======'.format(time.process_time() - t))
+    # data pre-process data
+    for amazon_idx in amazon_data.keys():
+        amazon_data[amazon_idx] = {
+            'record_id': amazon_data[amazon_idx].entry_id,
+            'bag_of_words': amazon_data[amazon_idx].transform_to_bag_of_words(),
+            'bag_of_words_name': amazon_data[amazon_idx].transform_to_bag_of_words_name(),
+            'clean_string': amazon_data[amazon_idx].transform_to_clean_string(),
+        }
 
-    # return gold_standard, pairs_with_similarities
+    for google_data_key in google_data.keys():
+        google_data[google_data_key] = {
+            'record_id': google_data[google_data_key].entry_id,
+            'bag_of_words': google_data[google_data_key].transform_to_bag_of_words(),
+            'bag_of_words_name': google_data[google_data_key].transform_to_bag_of_words_name(),
+            'clean_string': google_data[google_data_key].transform_to_clean_string()
+        }
+
+    pairs_blocked = []
+
+    print('====== the cartesian product contains {} comparision records ======'
+          .format(len(amazon_data) * len(google_data)))
+
+    # build cartesian (n * m) dataset and already calculate simple jaccard similarity
+    for amazon_idx, amazon_value in amazon_data.items():
+        for google_idx, google_value in google_data.items():
+
+            if not has_low_jaccard_similarity(amazon_value['bag_of_words_name'] + amazon_value['bag_of_words'],
+                                              google_value['bag_of_words_name'] + google_value['bag_of_words']):
+                pairs_blocked.append({
+                    'record_a': amazon_value,
+                    'record_b': google_value
+                })
+
+    print('====== blocking done. We are dealing now with {} pairs. Took {} s ======'.format(len(pairs_blocked), time.process_time() - t))
+
+    corpus_list_description = []
+    corpus_list_name = []
+    corpus_list_combined = []
+
+    for pair in pairs_blocked:
+
+        length_a = len(pair['record_a']['bag_of_words'])
+        length_b = len(pair['record_b']['bag_of_words'])
+
+        if length_b >= 42 and length_a >= 42:
+            pair['record_a']['bag_of_words'] = pair['record_a']['bag_of_words'][:length_b]
+            pair['record_b']['bag_of_words'] = pair['record_b']['bag_of_words'][:length_b]
+
+        corpus_list_description.append(pair['record_a']['bag_of_words'])
+        corpus_list_description.append(pair['record_b']['bag_of_words'])
+        corpus_list_name.append(pair['record_a']['bag_of_words_name'])
+        corpus_list_name.append(pair['record_b']['bag_of_words_name'])
+        corpus_list_combined.append(pair['record_a']['bag_of_words_name'] + pair['record_a']['bag_of_words'])
+        corpus_list_combined.append(pair['record_b']['bag_of_words_name'] + pair['record_b']['bag_of_words'])
+
+    print('====== gathered all bag of words to calculate similarities ======')
+
+    pairs_with_similarities = SimilarityCalculator().calculate_pairs_with_similarities(pairs_blocked,
+                                                                                       corpus_list_description,
+                                                                                       corpus_list_name,
+                                                                                       corpus_list_combined)
+
+    # _pretty_print_order_by_cosine_desc()
+
+    print('====== calculated similarities for all pairs. Took {} s ======'.format(time.process_time() - t))
+
+    return gold_standard, pairs_with_similarities
 
 
 def active_learning(gold_standard, pairs_with_similarities):
 
-    active_learning_runs = 20
+    active_learning_runs = 10
 
     print('====== start active learning with {} runs ======'.format(active_learning_runs))
 
@@ -121,13 +132,13 @@ def active_learning(gold_standard, pairs_with_similarities):
 
         # learner = SvmLearner()
         # learner = RandomForestLearner()
-        learner = EnsembleLearner(SvmLearner, 24)
+        learner = EnsembleLearner(RandomForestLearner, 8)
         oracle = Oracle(gold_standard)
         # ranker = RandomRanker()
         ranker = UncertaintyRanker()
-        budget = 400
+        budget = 1400
         batch_size = 10
-        initial_training_data_size = 10
+        initial_training_data_size = 1000
 
         iterative_active_learning = IterativeActiveLearningAlgorithm(learner, oracle, ranker, metrics, budget, batch_size,
                                                                      initial_training_data_size)
@@ -153,14 +164,13 @@ if __name__ == "__main__":
     if sys.argv[1] == 'pre_processing':
         print('====== start pre-processing data ======')
 
-        # gs, ps = pre_processing()
-        pre_processing()
+        gs, ps = pre_processing()
 
-        # pickle = PickleService()
-        # pickle.save_pre_processed_data(ps, './data/intermediate_data')
-        # pickle.save_gold_standard_data(gs, './data/intermediate_data')
-        #
-        # print('====== saved pre-processed data and end program ======')
+        pickle = PickleService()
+        pickle.save_pre_processed_data(ps, './data/intermediate_data')
+        pickle.save_gold_standard_data(gs, './data/intermediate_data')
+
+        print('====== saved pre-processed data and end program ======')
 
     elif sys.argv[1] == 'active_learning':
         print('====== start active learning with intermediate data ======')

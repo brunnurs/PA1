@@ -10,13 +10,12 @@ class RandomForestLearner(Learner):
 
     def __init__(self):
         print('Initialize an Random forest learner')
-        self.clf = RandomForestClassifier(n_estimators=500, oob_score=True)
+        self.clf = RandomForestClassifier(n_estimators=500)
 
         self.prediction = []
 
     def fit(self, x, y):
-        x_sampled, y_sampled = SMOTE_oversampling(x, y)
-        self.clf.fit(x_sampled, y_sampled)
+        self.clf.fit(x, y)
 
     def predict(self, x):
         self.prediction = self.clf.predict(x)

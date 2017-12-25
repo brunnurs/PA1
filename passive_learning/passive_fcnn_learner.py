@@ -102,23 +102,23 @@ def create_keras_model(input_vector_length):
     model = Sequential()
 
     model.add(Dense(500, batch_input_shape=(None, input_vector_length)))
-    # model.add(keras.layers.normalization.BatchNormalization())
-    # model.add(Dropout(0.3))
+    model.add(keras.layers.normalization.BatchNormalization())
+    model.add(Dropout(0.3))
     model.add(Activation('relu'))
 
     model.add(Dense(500))
-    # model.add(keras.layers.normalization.BatchNormalization())
-    # model.add(Dropout(0.3))
+    model.add(keras.layers.normalization.BatchNormalization())
+    model.add(Dropout(0.3))
     model.add(Activation('relu'))
 
     model.add(Dense(500))
-    # model.add(keras.layers.normalization.BatchNormalization())
-    # model.add(Dropout(0.3))
+    model.add(keras.layers.normalization.BatchNormalization())
+    model.add(Dropout(0.3))
     model.add(Activation('relu'))
 
     model.add(Dense(50))
-    # model.add(keras.layers.normalization.BatchNormalization())
-    # model.add(Dropout(0.3))
+    model.add(keras.layers.normalization.BatchNormalization())
+    model.add(Dropout(0.3))
     model.add(Activation('relu'))
 
     model.add(Dense(1, activation='sigmoid'))

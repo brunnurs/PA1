@@ -7,9 +7,11 @@ from sklearn.metrics import cohen_kappa_score, make_scorer
 from active_learning.metrics import Metrics
 from active_learning.svm_learner import SvmLearner
 from active_learning.utils import transform_to_labeled_feature_vector
+from data_analytics.manual_analytics import save_information_about_predictions
 from passive_learning.passive_learner_utils import label_data
 from passive_learning.sampling import random_oversampling, downsample_to_even_classes, SMOTE_oversampling, \
     ADASYN_oversampling, random_undersampling
+from passive_learning.visualize_svm_learner import plot_clasifier_and_scatter_data
 from persistance.pickle_service import PickleService
 
 
@@ -23,12 +25,16 @@ def explore_svm_performance(data, gold_standard):
 
     x, y = transform_to_labeled_feature_vector(data)
 
+    # x = x[:50000]
+    # y = y[:50000]
+
     # x, y = downsample_to_even_classes(data)svm
     # x, y = random_oversampling(data)
     # x, y = SMOTE_oversampling(x, y)
     # x, y = ADASYN_oversampling(data)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
+    indices = range(len(x))
+    x_train, x_test, y_train, y_test, indices_train, indices_test = train_test_split(x, y, indices, test_size=0.25)
 
     # x_train, y_train = SMOTE_oversampling(x_train, y_train)
 
@@ -36,9 +42,10 @@ def explore_svm_performance(data, gold_standard):
 
     # those parameters have been found by grid search
     # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19}, probability=True)
-    # clf = SVC(C=10, gamma=10, kernel='rbf', class_weight={0: 1, 1: 19})
+    # clf = SVC(C=100, gamma=10, class_weight='balanced', kernel='rbf')
+    clf = SVC(C=100, gamma=10, kernel='rbf')
 
-    clf = SvmLearner()
+    # clf = SvmLearner()
     # clf = SVC(C=100, kernel='linear', class_weight=None, probability=True)
 
     clf.fit(x_train, y_train)
@@ -47,8 +54,11 @@ def explore_svm_performance(data, gold_standard):
 
     Metrics.print_classification_report_raw(y_pred, y_test)
 
-    probas_pred = clf.clf_.decision_function(x_test)
-    Metrics.plot_precision_recall_curve(y_test, probas_pred)
+    # probas_pred = clf.decision_function(x_test)
+    # Metrics.plot_precision_recall_curve(y_test, probas_pred)
+
+    save_information_about_predictions(clf, x_test, y_test, indices_test, data)
+    plot_clasifier_and_scatter_data(clf, x_train, y_train)
 
 
 def find_best_parameters_grid_search(x_test, x_train, y_test, y_train):

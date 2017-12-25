@@ -44,10 +44,10 @@ class GoogleAmazonDataImporter:
             for row in reader:
                 try:
                     gold_standard.append({
-                        'amazon_record': amazon_data[row['idAmazon']],
-                        'amazon_record_id': row['idAmazon'],
-                        'google_record': google_data[row['idGoogleBase']],
-                        'google_record_id': row['idGoogleBase']
+                        'record_a': amazon_data[row['idAmazon']],
+                        'record_a_id': row['idAmazon'],
+                        'record_b': google_data[row['idGoogleBase']],
+                        'record_b_id': row['idGoogleBase']
                     })
                 except KeyError:
                     print('could not find objects for row' + row)

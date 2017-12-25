@@ -72,8 +72,8 @@ class IterativeActiveLearningAlgorithm:
             if idx not in idx_list:
                 unlabeled_data.append(val)
             else:
-                val['is_match'] = self.oracle.is_match(val['abt_record']['record_id'],
-                                                       val['buy_record']['record_id'])
+                val['is_match'] = self.oracle.is_match(val['record_a']['record_id'],
+                                                       val['record_b']['record_id'])
                 labeled_data.append(val)
 
         return unlabeled_data, labeled_data

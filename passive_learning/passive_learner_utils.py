@@ -12,8 +12,8 @@ def label_data(data, gold_standard):
     oracle = Oracle(gold_standard)
     t = time.process_time()
     for record in data:
-        record['is_match'] = oracle.is_match(record['abt_record']['record_id'],
-                                             record['buy_record']['record_id'])
+        record['is_match'] = oracle.is_match(record['record_a']['record_id'],
+                                             record['record_b']['record_id'])
 
     number_of_matches = reduce(lambda x, r: x + (1 if r['is_match'] is True else 0), data, 0)
 
